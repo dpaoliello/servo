@@ -48,10 +48,6 @@ may have shared object dependencies on them.
 """
 
 GSTREAMER_WIN_DEPENDENCY_LIBS = [
-    "avcodec-59.dll",
-    "avfilter-8.dll",
-    "avformat-59.dll",
-    "avutil-57.dll",
     "bz2.dll",
     "ffi-7.dll",
     "gio-2.0-0.dll",
@@ -60,19 +56,11 @@ GSTREAMER_WIN_DEPENDENCY_LIBS = [
     "gobject-2.0-0.dll",
     "graphene-1.0-0.dll",
     "intl-8.dll",
-    "libcrypto-1_1-x64.dll",
-    "libjpeg-8.dll",
-    "libogg-0.dll",
-    "libpng16-16.dll",
-    "libssl-1_1-x64.dll",
-    "libvorbis-0.dll",
-    "libvorbisenc-2.dll",
     "libwinpthread-1.dll",
     "nice-10.dll",
     "opus-0.dll",
     "orc-0.4-0.dll",
     "pcre2-8-0.dll",
-    "swresample-4.dll",
     "theora-0.dll",
     "theoradec-1.dll",
     "theoraenc-1.dll",
@@ -81,7 +69,49 @@ GSTREAMER_WIN_DEPENDENCY_LIBS = [
 """
 DLLs that GStreamer ships in the Windows distribution that are necessary for
 using the plugin selection that we have. This list is curated by a combination
-of using `dumpbin` and the errors that appear when starting Servo.
+of using `dumpbin` and the errors that appear when starting Servo. These names
+are shared between the x86_64 and aarch64 distributions; architecture-specific
+DLLs (which are versioned differently) are listed separately below.
+"""
+
+GSTREAMER_WIN_X86_64_DEPENDENCY_LIBS = [
+    "avcodec-59.dll",
+    "avfilter-8.dll",
+    "avformat-59.dll",
+    "avutil-57.dll",
+    "libcrypto-1_1-x64.dll",
+    "libjpeg-8.dll",
+    "libogg-0.dll",
+    "libpng16-16.dll",
+    "libssl-1_1-x64.dll",
+    "libvorbis-0.dll",
+    "libvorbisenc-2.dll",
+    "swresample-4.dll",
+]
+"""
+Architecture-specific GStreamer dependency DLLs for the x86_64 Windows
+distribution.
+"""
+
+GSTREAMER_WIN_AARCH64_DEPENDENCY_LIBS = [
+    "avcodec-61.dll",
+    "avfilter-10.dll",
+    "avformat-61.dll",
+    "avutil-59.dll",
+    "jpeg8.dll",
+    "libcrypto-3-arm64.dll",
+    "libssl-3-arm64.dll",
+    "ogg-0.dll",
+    "png16.dll",
+    "swresample-5.dll",
+    "swscale-8.dll",
+    "vorbis-0.dll",
+    "vorbisenc-2.dll",
+]
+"""
+Architecture-specific GStreamer dependency DLLs for the aarch64 (ARM64) Windows
+distribution. These ship under different names and versions than the x86_64
+distribution.
 """
 
 GSTREAMER_PLUGIN_LISTS_DIRECTORY = os.path.normpath(
@@ -119,8 +149,14 @@ def load_plugin_libraries_from_text_file(file_name: str) -> list[str]:
         return plugin_list
 
 
-def windows_dlls() -> list[str]:
-    return GSTREAMER_WIN_DEPENDENCY_LIBS + [f"{lib}-1.0-0.dll" for lib in GSTREAMER_BASE_LIBS]
+def windows_dlls(target: BuildTarget) -> list[str]:
+    if "aarch64" in target.triple():
+        arch_libs = GSTREAMER_WIN_AARCH64_DEPENDENCY_LIBS
+    else:
+        arch_libs = GSTREAMER_WIN_X86_64_DEPENDENCY_LIBS
+    return (
+        GSTREAMER_WIN_DEPENDENCY_LIBS + arch_libs + [f"{lib}-1.0-0.dll" for lib in GSTREAMER_BASE_LIBS]
+    )
 
 
 def windows_plugins() -> list[str]:

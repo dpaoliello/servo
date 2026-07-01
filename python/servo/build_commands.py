@@ -354,7 +354,7 @@ def package_gstreamer_dlls(servo_exe_dir: str, target: BuildTarget) -> bool:
         return False
 
     missing = []
-    for gst_lib in windows_dlls():
+    for gst_lib in windows_dlls(target):
         try:
             shutil.copy(path.join(gst_root, "bin", gst_lib), servo_exe_dir)
         except Exception:
