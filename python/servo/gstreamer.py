@@ -154,9 +154,7 @@ def windows_dlls(target: BuildTarget) -> list[str]:
         arch_libs = GSTREAMER_WIN_AARCH64_DEPENDENCY_LIBS
     else:
         arch_libs = GSTREAMER_WIN_X86_64_DEPENDENCY_LIBS
-    return (
-        GSTREAMER_WIN_DEPENDENCY_LIBS + arch_libs + [f"{lib}-1.0-0.dll" for lib in GSTREAMER_BASE_LIBS]
-    )
+    return GSTREAMER_WIN_DEPENDENCY_LIBS + arch_libs + [f"{lib}-1.0-0.dll" for lib in GSTREAMER_BASE_LIBS]
 
 
 def windows_plugins() -> list[str]:

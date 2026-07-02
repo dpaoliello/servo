@@ -389,7 +389,15 @@ class PackageCommands(CommandBase):
             print("Registering WiX extensions")
             try:
                 subprocess.check_call(
-                    ["wix", "extension", "add", "-acceptEula", "wix7", "-g", "WixToolset.BootstrapperApplications.wixext"]
+                    [
+                        "wix",
+                        "extension",
+                        "add",
+                        "-acceptEula",
+                        "wix7",
+                        "-g",
+                        "WixToolset.BootstrapperApplications.wixext",
+                    ]
                 )
             except subprocess.CalledProcessError as e:
                 print("WiX extension add exited with return value %d" % e.returncode)
@@ -402,7 +410,15 @@ class PackageCommands(CommandBase):
             try:
                 with cd(dir_to_msi):
                     subprocess.check_call(
-                        ["wix", "build", "-acceptEula", "wix7", "-ext", "WixToolset.BootstrapperApplications.wixext", bundle_wxs_path]
+                        [
+                            "wix",
+                            "build",
+                            "-acceptEula",
+                            "wix7",
+                            "-ext",
+                            "WixToolset.BootstrapperApplications.wixext",
+                            bundle_wxs_path,
+                        ]
                     )
             except subprocess.CalledProcessError as e:
                 print("WiX build exited with return value %d" % e.returncode)
