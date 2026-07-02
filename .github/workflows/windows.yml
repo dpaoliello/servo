@@ -122,11 +122,10 @@ jobs:
           echo CCACHE=ccache >> $GITHUB_ENV
 
       # Install missing tools in a GitHub-hosted runner.
-      - name: Install wixtoolset
+      - name: Install WiX
         if: ${{ runner.environment != 'self-hosted' }}
         run: |
-          winget install --silent --exact WiXToolset.WiXToolset
-          echo "C:\\Program Files (x86)\\WiX Toolset v3.11\\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          winget install --silent --exact WiXToolset.WiXCLI
       - name: Setup Python
         if: ${{ runner.environment != 'self-hosted' }}
         uses: ./.github/actions/setup-python
@@ -135,12 +134,6 @@ jobs:
         run: |
           .\mach fetch
           .\mach bootstrap-gstreamer
-      # For some reason WiX isn't currently on the GitHub runner path. This is a
-      # temporary workaround until that is fixed.
-      - name: Add WiX to Path
-        if: ${{ runner.environment != 'self-hosted' }}
-        run: |
-          "$env:WIX\bin" >> $env:GITHUB_PATH
 
       # Always install crown, even on self-hosted runners, because it is tightly
       # coupled to the rustc version, and we may have the wrong version if the
