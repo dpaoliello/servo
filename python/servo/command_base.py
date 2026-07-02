@@ -403,6 +403,14 @@ class CommandBase(object):
         if self.config["build"]["rustflags"]:
             env["RUSTFLAGS"] += " " + self.config["build"]["rustflags"]
 
+        # Work around a winapi 0.3.9 bug: its build script deliberately refuses to emit a
+        # link directive for `opengl32` on aarch64 Windows (see the `libs.retain(...)` hack
+        # in winapi's build.rs). This leaves surfman's WGL backend with undefined symbols
+        # (wglCreateContext, wglMakeCurrent, etc.) when linking binaries and unit-test
+        # executables that depend on surfman. Force-link opengl32 to satisfy them.
+        if self.target.triple() == "aarch64-pc-windows-msvc":
+            env["RUSTFLAGS"] += " -Clink-arg=opengl32.lib"
+
         if not (self.config["build"]["ccache"] == ""):
             env["CCACHE"] = self.config["build"]["ccache"]
 
